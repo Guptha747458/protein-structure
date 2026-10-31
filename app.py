@@ -46,56 +46,75 @@ def inject_custom_css() -> None:
         <style>
         /* Main Container Spacing */
         .block-container {
-            padding-top: 1.8rem;
+            padding-top: 1.5rem;
             padding-bottom: 2.5rem;
             max-width: 96%;
         }
 
-        /* Metric card styling */
+        /* Dark-mode aware Glassmorphic Metric card styling */
         div[data-testid="stMetric"] {
-            background: linear-gradient(135deg, rgba(240, 244, 248, 0.6) 0%, rgba(255, 255, 255, 0.9) 100%);
-            border: 1px solid #E2E8F0;
-            border-radius: 10px;
-            padding: 12px 16px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-            transition: transform 0.15s ease-in-out;
+            background: rgba(30, 41, 59, 0.7) !important;
+            border: 1px solid rgba(148, 163, 184, 0.25) !important;
+            border-radius: 12px !important;
+            padding: 12px 14px !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2) !important;
+            transition: transform 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
         }
         div[data-testid="stMetric"]:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+            border-color: rgba(59, 130, 246, 0.6) !important;
+            box-shadow: 0 8px 12px -2px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Prevent Metric Label Truncation */
+        div[data-testid="stMetric"] label {
+            color: #94A3B8 !important;
+            font-weight: 600 !important;
+            font-size: 0.82rem !important;
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: unset !important;
+            line-height: 1.25 !important;
+        }
+        div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+            color: #F8FAFC !important;
+            font-weight: 700 !important;
+            font-size: 1.45rem !important;
         }
 
         /* pLDDT Legend Badges */
         .plddt-badge {
             display: inline-block;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.82rem;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 0.84rem;
             font-weight: 600;
             margin-right: 6px;
-            margin-bottom: 6px;
+            margin-bottom: 7px;
             color: #FFFFFF;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.15);
         }
 
         /* Status Pills */
         .status-pill {
             display: inline-flex;
             align-items: center;
-            background-color: #EEF2F6;
-            border: 1px solid #CBD5E1;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.4);
             border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #334155;
-            margin-bottom: 12px;
+            padding: 6px 14px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: #93C5FD;
+            backdrop-filter: blur(8px);
         }
 
         /* Section Headings */
         .section-header {
             font-size: 1.15rem;
             font-weight: 700;
-            color: #1E293B;
+            color: #F1F5F9;
             border-bottom: 2px solid #3B82F6;
             padding-bottom: 6px;
             margin-top: 14px;
@@ -407,14 +426,14 @@ def render_main_dashboard(settings: dict[str, Any]) -> None:
     # Header section
     st.markdown(
         f"""
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
             <div>
-                <h2 style="margin:0; color:#0F172A;">BioFold AI 🧬</h2>
-                <span style="color:#64748B; font-size:0.95rem;">Structure: <b>{source_label}</b></span>
+                <h2 style="margin:0; font-size:1.9rem; font-weight:800; background: linear-gradient(90deg, #38BDF8 0%, #818CF8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">BioFold AI 🧬</h2>
+                <span style="color:#94A3B8; font-size:0.92rem;">Active Structure: <b style="color:#F1F5F9;">{source_label}</b></span>
             </div>
             <div>
                 <span class="status-pill">
-                    ● Model: {settings['representation']} • {settings['color_scheme']} • {props.length} Residues
+                    ● {settings['representation']} &bull; {settings['color_scheme']} &bull; {props.length} Residues
                 </span>
             </div>
         </div>
@@ -477,11 +496,21 @@ def render_main_dashboard(settings: dict[str, Any]) -> None:
             text="Percentage (%)",
             height=220,
         )
-        sec_fig.update_traces(texttemplate="%{text:.1f}%", textposition="outside")
+        sec_fig.update_traces(texttemplate="%{text:.1f}%", textposition="outside", textfont=dict(color="#F8FAFC"))
         sec_fig.update_layout(
             showlegend=False,
             margin=dict(l=20, r=20, t=20, b=20),
-            yaxis=dict(range=[0, max(sec_df["Percentage (%)"].max() * 1.25, 20)]),
+            xaxis=dict(
+                tickfont=dict(color="#CBD5E1", size=11),
+                title_font=dict(color="#F1F5F9"),
+                showgrid=False,
+            ),
+            yaxis=dict(
+                range=[0, max(sec_df["Percentage (%)"].max() * 1.25, 20)],
+                tickfont=dict(color="#CBD5E1", size=11),
+                title_font=dict(color="#F1F5F9"),
+                gridcolor="rgba(148, 163, 184, 0.15)",
+            ),
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
         )
@@ -510,9 +539,25 @@ def render_main_dashboard(settings: dict[str, Any]) -> None:
         )
         res_fig.update_layout(
             margin=dict(l=20, r=20, t=10, b=20),
-            xaxis=dict(title="Residue Code (20 Standard)", tickangle=0),
-            yaxis=dict(title="Count in Sequence"),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=10)),
+            xaxis=dict(
+                title=dict(text="Residue Code (20 Standard)", font=dict(color="#F1F5F9")),
+                tickangle=0,
+                tickfont=dict(color="#CBD5E1"),
+                gridcolor="rgba(148, 163, 184, 0.1)",
+            ),
+            yaxis=dict(
+                title=dict(text="Count in Sequence", font=dict(color="#F1F5F9")),
+                tickfont=dict(color="#CBD5E1"),
+                gridcolor="rgba(148, 163, 184, 0.15)",
+            ),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1,
+                font=dict(size=10, color="#CBD5E1"),
+            ),
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
         )
@@ -530,7 +575,7 @@ def render_main_dashboard(settings: dict[str, Any]) -> None:
     with col_right:
         st.markdown('<div class="section-header">🔮 Interactive 3D Molecular Viewer</div>', unsafe_allow_html=True)
 
-        # Build and render the 3D model
+        # Build and render the 3D model with auto-centering and confidence mapping
         viewer = build_3d_viewer(
             pdb_text=pdb_text,
             representation=settings["representation"],
@@ -538,10 +583,9 @@ def render_main_dashboard(settings: dict[str, Any]) -> None:
             spinning=settings["spinning"],
             background_color=settings["background_color"],
             surface_opacity=settings["surface_opacity"],
-            width=800,
-            height=560,
+            confidence_summary=conf,
         )
-        render_3d_viewer(viewer, height=560)
+        render_3d_viewer(viewer, height=560, background_color=settings["background_color"])
 
         # ---------------------------------------------------------
         # Structure Confidence / pLDDT Breakdown

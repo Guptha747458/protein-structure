@@ -193,12 +193,26 @@ def create_plddt_track_chart(summary: ConfidenceSummary) -> go.Figure:
     )
 
     fig.update_layout(
-        title=dict(text="<b>Per-Residue pLDDT Confidence Profile</b>", font=dict(size=14)),
-        xaxis=dict(title="Residue Sequence Index", dtick=max(1, len(x_vals) // 10), showgrid=True),
-        yaxis=dict(title="pLDDT Confidence (0-100)", range=[0, 105], showgrid=True),
+        title=dict(text="<b>Per-Residue pLDDT Confidence Profile</b>", font=dict(size=14, color="#F8FAFC")),
+        xaxis=dict(
+            title="Residue Sequence Index",
+            dtick=max(1, len(x_vals) // 10),
+            showgrid=True,
+            gridcolor="rgba(148, 163, 184, 0.15)",
+            tickfont=dict(color="#CBD5E1"),
+            title_font=dict(color="#F1F5F9"),
+        ),
+        yaxis=dict(
+            title="pLDDT Confidence (0-100)",
+            range=[0, 105],
+            showgrid=True,
+            gridcolor="rgba(148, 163, 184, 0.15)",
+            tickfont=dict(color="#CBD5E1"),
+            title_font=dict(color="#F1F5F9"),
+        ),
         height=300,
         margin=dict(l=40, r=20, t=40, b=40),
-        plot_bgcolor="rgba(240,244,248,0.3)",
+        plot_bgcolor="rgba(15, 23, 42, 0.4)",
         paper_bgcolor="rgba(0,0,0,0)",
     )
     return fig
